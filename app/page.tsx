@@ -7,6 +7,7 @@ import FlowerArtwork from "@/components/bouquet/FlowerArtwork";
 import type { Bouquet } from "@/types/bouquet";
 
 const caveat = Caveat({ subsets: ["latin"], weight: "700", display: "swap" });
+export const metadata = { alternates: { canonical: "/" } };
 
 const welcomeBouquet: Bouquet = {
   mode: "color",

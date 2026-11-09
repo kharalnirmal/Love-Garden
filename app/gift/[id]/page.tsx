@@ -1,13 +1,12 @@
 import { notFound } from "next/navigation";
 import GiftReveal from "@/components/bouquet/GiftReveal";
 import { getBouquetById } from "@/lib/bouquet-repository";
+import { giftMetadata } from "@/lib/site-metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "A bouquet for you",
-  robots: { index: false, follow: false },
-  openGraph: { title: "A little love, just for you", description: "Someone sent you flowers. Open your bouquet." },
-};
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  return giftMetadata((await params).id);
+}
 
 export default async function GiftPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
