@@ -37,6 +37,8 @@ The save API accepts `APP_ORIGIN` and, on Vercel, platform-provided `VERCEL_URL`
 - Periodically remove expired rows from `write_rate_limits` using a trusted scheduled database job. The table stores HMAC bucket keys, not raw addresses. Cleanup is not scheduled by this repository.
 - The sender page provides no edit or delete operations and is not authenticated ownership. Keep gift URLs private when using unlisted visibility.
 - Public-garden consent starts unchecked each time the final step opens. Saving without opting in creates an unlisted gift. Garden listings and design pages use independent random IDs and never expose the recipient gift ID, names, note, or personal tag. Names and notes are still stored for the separate recipient gift link; anyone holding that gift link can read them.
+- Responses use `Referrer-Policy: no-referrer` to avoid sending gift URLs as referrers, deny framing, and disable MIME sniffing. Gift and legacy bouquet routes also send no-index/no-snippet headers and private no-store caching. Search-engine directives are advisory, not authentication. The CSP restricts framing, base URLs, and objects; it is not a full script-nonce policy.
+- Treat recipient links like passwords. Forwarding, screenshots, browser history, hosting access logs, and administrative database access are outside a link-only privacy boundary. Notes are not end-to-end encrypted; do not promise absolute secrecy or recipient identity verification.
 - Existing gifts in another database are not imported automatically. Switching from a development branch to production does not move that branch's gifts.
 
 ## Development-only integration tests
