@@ -1,5 +1,5 @@
 import { listPublicBouquets } from "@/lib/bouquet-repository";
-import { ArrowRight, Flower2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import BouquetOnly from "@/components/bouquet/BouquetOnly";
@@ -23,7 +23,6 @@ export default async function AllBouquetsPage({ searchParams }: {
   return (
     <main id="main-content" className="garden-page text-center p-6">
       <h1 className="home-wordmark garden-title">The garden.</h1>
-      <Link href="/bouquet?mode=color" className="quiet-link mb-8"><Flower2 size={17} aria-hidden="true" /> Make your own</Link>
       {!result.bouquets.length && <p className="my-8">The garden is waiting for its first flowers.</p>}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
         {result.bouquets.map((bouquet) => (
