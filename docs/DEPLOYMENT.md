@@ -8,7 +8,7 @@ Use a permanent Neon production branch, not an expiring preview branch. Configur
 | --- | --- |
 | `DATABASE_URL` | Production pooled Postgres connection, with TLS |
 | `DATABASE_URL_UNPOOLED` | Same database and branch, direct connection for migrations |
-| `APP_ORIGIN` | Public HTTPS origin, such as `https://flowers.example.com` |
+| `APP_ORIGIN` | `https://lovebouquet.vercel.app` (or your own public HTTPS origin) |
 | `RATE_LIMIT_SECRET` | Random secret of at least 32 characters |
 | `NEON_BRANCH` | `production` (operational label, not a connection switch) |
 
@@ -25,7 +25,7 @@ The application uses a shared, bounded Prisma connection pool in production. Dev
 5. Run `pnpm build`, then deploy using the hosting platform. Configure production variables separately in that platform.
 6. Verify saving, sender sharing, recipient reveal, garden privacy, QR downloads, and phone-camera scanning using the public HTTPS URL.
 
-`APP_ORIGIN=http://localhost:3000` is for local use only. QR codes using localhost will not open the app from another device. Do not treat a successful build as browser or mobile verification.
+`APP_ORIGIN=http://localhost:3000` is for local development only. Production uses `https://lovebouquet.vercel.app` when `APP_ORIGIN` is missing or still points at loopback. QR codes, copied recipient links, and metadata share the same resolved origin. Set `APP_ORIGIN` explicitly when moving to a custom domain. Existing downloaded QR images must be downloaded again; they cannot update themselves. Do not treat a successful build as browser or mobile verification.
 
 The save API accepts `APP_ORIGIN` and, on Vercel, platform-provided `VERCEL_URL` and `VERCEL_PROJECT_PRODUCTION_URL` origins. Development also accepts the address serving that request, including local-network addresses. Custom production domains must match `APP_ORIGIN`; arbitrary request Host headers never extend the production allowlist.
 

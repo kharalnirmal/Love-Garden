@@ -2,6 +2,8 @@
 
 Personalized digital bouquets, made to send a little love.
 
+**Visit: [lovebouquet.vercel.app](https://lovebouquet.vercel.app/)**
+
 Choose flowers, arrange a bouquet, write a note, and share a private link or QR code. Recipients open a floral envelope to reveal their flowers and message.
 
 ## Features

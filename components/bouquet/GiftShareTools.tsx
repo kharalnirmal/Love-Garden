@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Check, Copy, Download, QrCode, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function GiftShareTools({ id }: { id: string }) {
+export default function GiftShareTools({ id, recipientUrl }: { id: string; recipientUrl: string }) {
   const [copied, setCopied] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -15,12 +15,11 @@ export default function GiftShareTools({ id }: { id: string }) {
 
   async function copyLink() {
     try {
-      const url = new URL(`/gift/${encodeURIComponent(id)}`, window.location.origin).href;
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(recipientUrl);
       setCopied(true);
       setError("");
     } catch {
-      setError("Copy the gift link from your address bar.");
+      setError("Couldn’t copy the gift link. Please try again.");
     }
   }
 

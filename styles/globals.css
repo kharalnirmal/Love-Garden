@@ -169,8 +169,10 @@ input:focus-visible, textarea:focus-visible { outline: 2px solid var(--rose) !im
 .writing-card textarea { resize: vertical; min-height: 150px; }
 .writing-card ::placeholder { color: #8e8e84; }
 .character-count { text-align: right; font: 10px Arial, sans-serif; color: #777a71; }
-.gallery-bouquet { border: 1px solid var(--soft-line); border-radius: 24px; overflow: hidden; background: #fffdf9; }
-.gallery-bouquet:hover { transform: translateY(-4px); border-color: #bda7af; }
+.garden-title { margin: 12px 0 20px; }
+.gallery-bouquet { display: block; min-width: 0; border: 0; background: transparent; }
+.gallery-bouquet:hover { transform: translateY(-4px); }
+.gallery-bouquet .flower-art-frame { --art-scale: .34; height: calc(620px * var(--art-scale)); }
 .gift-page { max-width: 1000px; margin: auto; }
 .received-card { border: 1px solid #e4ddd2; border-radius: 6px; background: #fffdf9; box-shadow: 0 12px 35px #5b413508; font: 400 24px/1.5 var(--font-note), cursive; overflow-wrap: anywhere; white-space: pre-wrap; }
 .writing-card { font-family: var(--font-note), cursive; font-size: 24px; font-weight: 400; }

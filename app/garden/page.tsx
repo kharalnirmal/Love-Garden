@@ -22,14 +22,14 @@ export default async function AllBouquetsPage({ searchParams }: {
   }
   return (
     <main id="main-content" className="garden-page text-center p-6">
-      <h1 className="stage-title">The garden.</h1>
+      <h1 className="home-wordmark garden-title">The garden.</h1>
       <Link href="/bouquet?mode=color" className="quiet-link mb-8"><Flower2 size={17} aria-hidden="true" /> Make your own</Link>
       {!result.bouquets.length && <p className="my-8">The garden is waiting for its first flowers.</p>}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
         {result.bouquets.map((bouquet) => (
           <Link className="gallery-bouquet" href={`/garden/${bouquet.id}`} key={bouquet.id} aria-label="View this bouquet design">
             <BouquetOnly bouquet={bouquet} />
-            <p className="text-sm text-gray-500 m-6">{new Date(bouquet.created_at).toLocaleDateString("en-US")}</p>
+            <p className="text-xs text-muted-foreground mt-0 mb-4">{new Date(bouquet.created_at).toLocaleDateString("en-US")}</p>
           </Link>
         ))}
       </div>

@@ -3,13 +3,14 @@ import { createBouquetSchema } from "@/lib/bouquet-validation";
 import { createBouquet } from "@/lib/bouquet-repository";
 import { consumeWriteLimit } from "@/lib/write-rate-limit";
 import { isAllowedBouquetOrigin } from "@/lib/request-origin";
+import { getAppOrigin } from "@/lib/app-origin";
 
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin");
   if (!isAllowedBouquetOrigin(origin, request.url, {
-    appOrigin: process.env.APP_ORIGIN,
+    appOrigin: getAppOrigin(),
     nodeEnv: process.env.NODE_ENV,
     vercel: process.env.VERCEL,
     vercelUrl: process.env.VERCEL_URL,

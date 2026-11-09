@@ -2,7 +2,7 @@ import type React from "react";
 import "../styles/globals.css";
 import type { Metadata } from "next";
 import { Bodoni_Moda, DM_Sans, Parisienne, Patrick_Hand } from "next/font/google";
-import { giftUrl } from "@/lib/gift-sharing";
+import { getAppOrigin } from "@/lib/app-origin";
 import { siteDescription, siteTitle } from "@/lib/site-metadata";
 
 const display = Bodoni_Moda({ subsets: ["latin"], weight: ["400", "500"], style: ["normal", "italic"], variable: "--font-display", display: "swap" });
@@ -11,7 +11,7 @@ const handwritten = Parisienne({ subsets: ["latin"], weight: "400", variable: "-
 const note = Patrick_Hand({ subsets: ["latin"], weight: "400", variable: "--font-note", display: "swap" });
 
 export const metadata: Metadata = {
-  metadataBase: process.env.APP_ORIGIN ? new URL(new URL(giftUrl("preview", process.env.APP_ORIGIN)).origin) : undefined,
+  metadataBase: new URL(getAppOrigin()),
   icons: {
     icon: [
       { url: "/favicon.ico" },

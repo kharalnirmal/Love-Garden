@@ -1,6 +1,7 @@
 import { getBouquetPreviewById } from "@/lib/bouquet-repository";
 import { giftUrl } from "@/lib/gift-sharing";
 import { giftQrPng, giftQrSvg } from "@/lib/gift-qr";
+import { getAppOrigin } from "@/lib/app-origin";
 
 export const runtime = "nodejs";
 
@@ -10,7 +11,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const { id } = await params;
   try {
     if (!await getBouquetPreviewById(id)) return new Response("Gift not found", { status: 404 });
-    const url = giftUrl(id, process.env.APP_ORIGIN);
+    const url = giftUrl(id, getAppOrigin());
     const content = format === "svg" ? await giftQrSvg(url) : new Uint8Array(await giftQrPng(url));
     return new Response(content, {
       headers: {
