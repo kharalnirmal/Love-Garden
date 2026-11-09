@@ -60,9 +60,10 @@ async function main() {
     console.log("PASS: invalid arrangement, long message, oversized body, foreign origin, and missing gift");
 
     const fixtureIds = Array.from({ length: 14 }, (_, i) => `${marker}-${String(i).padStart(2, "0")}`);
+    const fixtureGardenIds = fixtureIds.map(() => randomUUID());
     ids.push(...fixtureIds);
-    await db.bouquet.createMany({ data: fixtureIds.map((id) => ({
-      ...payload, id, timestamp: BigInt(payload.timestamp), visibility: "public" as const,
+    await db.bouquet.createMany({ data: fixtureIds.map((id, index) => ({
+      ...payload, id, gardenId: fixtureGardenIds[index], timestamp: BigInt(payload.timestamp), visibility: "public" as const,
       // Equal timestamps explicitly exercise the secondary ID ordering.
       createdAt: new Date("2099-01-01T00:00:00Z"),
     })) });
@@ -73,7 +74,7 @@ async function main() {
     const combined = [...first.bouquets, ...second.bouquets];
     const combinedIds = combined.map((b) => b.id);
     assert.equal(new Set(combinedIds).size, combinedIds.length, "Pagination must not repeat rows");
-    for (const id of fixtureIds) assert.ok(combinedIds.includes(id), "Pagination must not skip equal-date rows");
+    for (const id of fixtureGardenIds) assert.ok(combinedIds.includes(id), "Pagination must not skip equal-date rows");
     assert.ok(!combinedIds.includes(ids[0]), "Unlisted gift must not appear in public queries");
     for (const bouquet of combined) assert.deepEqual(bouquet.letter, { sender: "", recipient: "", message: "" });
     const garden = await fetch(new URL("/garden", origin));
@@ -82,7 +83,7 @@ async function main() {
     assert.ok(!html.includes("The garden is resting"));
     const privateIdIndex = html.indexOf(ids[0]);
     assert.ok(privateIdIndex < 0, "Unlisted link must not leak in gallery HTML/RSC");
-    // Public IDs contain the marker; card text uses a distinct suffix.
+    assert.ok(!html.includes(ids[1]), "Public listings must not expose recipient gift IDs");
     assert.ok(!html.includes(`${marker}-private-card`), "Card message must not leak into previews");
     assert.ok(!html.includes("Test recipient"), "Card recipient must not leak into previews");
     assert.ok(html.includes("More bouquets"));

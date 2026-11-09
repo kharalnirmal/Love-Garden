@@ -65,7 +65,7 @@ tests/                 Unit and development-only integration tests
 
 The client owns an unsaved draft. `POST /api/bouquets` validates and stores it on the server. A successful save opens `/bouquet/[id]/share`; copied links and QR codes open `/gift/[id]`. Original `/bouquet/[id]` links remain supported.
 
-Database access is server-only. Gallery and social-preview queries exclude names and messages. An unlisted gift is **not authenticated**: anyone holding its URL can read it. Public bouquets expose their full gift when opened. The share page is read-only, not an authenticated ownership screen.
+Database access is server-only. The garden shows designs using separate random public IDs; it never links to recipient gifts or displays names, notes, or personal gift tags. Social previews also exclude personal text. A recipient gift is **not authenticated**: anyone holding its separate URL can read it. The share page is read-only, not an authenticated ownership screen.
 
 ## Deployment
 

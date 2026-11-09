@@ -2,13 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { createBouquetSchema } from "@/lib/bouquet-validation";
 import { createBouquet } from "@/lib/bouquet-repository";
 import { consumeWriteLimit } from "@/lib/write-rate-limit";
+import { isAllowedBouquetOrigin } from "@/lib/request-origin";
 
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin");
-  const allowedOrigin = process.env.APP_ORIGIN || (process.env.NODE_ENV === "development" ? request.nextUrl.origin : null);
-  if (!allowedOrigin || origin !== new URL(allowedOrigin).origin) {
+  if (!isAllowedBouquetOrigin(origin, request.url, {
+    appOrigin: process.env.APP_ORIGIN,
+    nodeEnv: process.env.NODE_ENV,
+    vercel: process.env.VERCEL,
+    vercelUrl: process.env.VERCEL_URL,
+    vercelProductionUrl: process.env.VERCEL_PROJECT_PRODUCTION_URL,
+  })) {
     return NextResponse.json({ error: "Please save your bouquet from this website." }, { status: 403 });
   }
   if (!request.headers.get("content-type")?.includes("application/json")) {

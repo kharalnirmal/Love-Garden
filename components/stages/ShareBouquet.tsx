@@ -8,10 +8,12 @@ import Bouquet from "../bouquet/Bouquet";
 import { useBouquet } from "../../context/BouquetContext";
 
 export default function ShareBouquet() {
-  const { bouquet, setBouquet } = useBouquet();
+  const { bouquet } = useBouquet();
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  // Consent is a fresh, manual choice each time this screen is entered.
+  const [publicConsent, setPublicConsent] = useState(false);
   const inFlight = useRef(false);
 
   async function handleCreateBouquet() {
@@ -23,7 +25,7 @@ export default function ShareBouquet() {
       const response = await fetch("/api/bouquets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bouquet),
+        body: JSON.stringify({ ...bouquet, visibility: publicConsent ? "public" : "unlisted" }),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Could not save your bouquet.");
@@ -39,16 +41,17 @@ export default function ShareBouquet() {
     <div className="share-stage text-center">
       <h1 className="stage-title">Ready to send.</h1>
       <Bouquet bouquet={bouquet} />
-      <div className="max-w-md mx-auto mb-6 text-sm space-y-3">
-        <label className="flex gap-3 items-center justify-center min-h-11">
-          <input type="checkbox" checked={bouquet.visibility === "public"} disabled={saving}
+      <fieldset className="garden-consent">
+        <legend>Share a little beauty?</legend>
+        <label className="garden-consent-choice">
+          <input type="checkbox" checked={publicConsent} disabled={saving}
             aria-describedby="unlisted-privacy garden-privacy"
-            onChange={(event) => setBouquet((prev) => ({ ...prev, visibility: event.target.checked ? "public" : "unlisted" }))} />
-           Show in the public garden
+            onChange={(event) => setPublicConsent(event.target.checked)} />
+           Add my bouquet to the public garden <span className="consent-optional">(optional)</span>
         </label>
-        <p id="unlisted-privacy" className="privacy-hint">Unlisted by default: only people with the link can open your gift.</p>
-        <p id="garden-privacy" className="privacy-hint">The garden shows flowers only, never your names or message. A public gift can be opened by anyone from the garden.</p>
-      </div>
+        <p id="unlisted-privacy">Leave unchecked to keep your gift unlisted. Only people with its link can open it.</p>
+        <p id="garden-privacy">Only your bouquet design is shared in the garden. Your names, message, and gift tag are never shown there. Your personal note stays with your recipient’s separate gift link.</p>
+      </fieldset>
       {error && <p role="alert" className="max-w-md mx-auto mb-4 text-red-800">{error}</p>}
       <Button size="lg" onClick={handleCreateBouquet} disabled={saving}>
         {saving ? <LoaderCircle className="loading-icon" size={18} aria-hidden="true" /> : <Link2 size={18} aria-hidden="true" />}{saving ? "Saving…" : "Create link"}

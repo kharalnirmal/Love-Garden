@@ -51,10 +51,17 @@ try {
   const garden = await fetch(`${origin}/garden`);
   assert.equal(garden.status, 200);
   const html = await garden.text();
-  assert.ok(html.includes(publicGift.id));
+  const [publicDesign] = await sql`SELECT garden_id FROM bouquets WHERE id = ${publicGift.id}`;
+  assert.ok(publicDesign.garden_id && html.includes(publicDesign.garden_id));
+  assert.ok(!html.includes(publicGift.id));
   assert.ok(!html.includes(privateGift.id));
   assert.ok(!html.includes(marker));
-  console.log("PASS GET /garden: public gift visible, unlisted gift and personal messages excluded");
+  const designPage = await fetch(`${origin}/garden/${publicDesign.garden_id}`);
+  assert.equal(designPage.status, 200);
+  const designHtml = await designPage.text();
+  assert.ok(!designHtml.includes(marker));
+  assert.ok(!designHtml.includes(publicGift.id));
+  console.log("PASS GET /garden: design-only sharing uses independent IDs and excludes personal messages");
   if (existingLimit.length === 0) {
     for (let i = 0; i < 3; i++) await save("unlisted");
     const response = await fetch(`${origin}/api/bouquets`, {

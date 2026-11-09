@@ -1,7 +1,8 @@
 import "server-only";
 import { withDb } from "@/lib/db";
 import { createBouquetSchema, shareIdSchema } from "@/lib/bouquet-validation";
-import type { Bouquet, SavedBouquet } from "@/types/bouquet";
+import type { SavedBouquet } from "@/types/bouquet";
+import { toPublicDesign } from "@/lib/public-bouquet";
 import type { Bouquet as BouquetRecord } from "@/generated/prisma/client";
 import { nanoid } from "nanoid";
 
@@ -18,7 +19,7 @@ export async function createBouquet(input: unknown): Promise<string> {
   const payload = createBouquetSchema.parse(input);
   const id = nanoid(24);
   await withDb((db) => db.bouquet.create({
-    data: { ...payload, id, timestamp: BigInt(payload.timestamp) },
+    data: { ...payload, id, gardenId: payload.visibility === "public" ? nanoid(24) : null, timestamp: BigInt(payload.timestamp) },
     select: { id: true },
   }));
   return id;
@@ -44,23 +45,30 @@ export async function getBouquetPreviewById(id: string) {
 export async function listPublicBouquets(before?: string) {
   if (before && !shareIdSchema.safeParse(before).success) throw new Error("Invalid garden cursor");
   const rows = await withDb((db) => db.bouquet.findMany({
-    where: { visibility: "public" },
-    ...(before ? { cursor: { id: before }, skip: 1 } : {}),
-    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    where: { visibility: "public", gardenId: { not: null } },
+    ...(before ? { cursor: { gardenId: before }, skip: 1 } : {}),
+    orderBy: [{ createdAt: "desc" }, { gardenId: "desc" }],
     take: 13,
     // Never fetch names or private messages into the gallery.
-    select: { id: true, mode: true, flowers: true, flowerOrder: true,
-      greenery: true, timestamp: true, createdAt: true },
+    select: publicDesignSelect,
   }));
   const hasMore = rows.length > 12;
   const page = rows.slice(0, 12);
-  const bouquets: (Bouquet & { id: string; created_at: string })[] = page.map((row) => ({
-    ...row,
-    flowers: createBouquetSchema.shape.flowers.parse(row.flowers),
-    flowerOrder: createBouquetSchema.shape.flowerOrder.parse(row.flowerOrder),
-    timestamp: Number(row.timestamp),
-    letter: { sender: "", recipient: "", message: "" },
-    created_at: row.createdAt.toISOString(),
+  const bouquets = page.map(toPublicDesign);
+  return { bouquets, nextCursor: hasMore ? page[page.length - 1].gardenId : null };
+}
+
+// No gift ID, names, or note are fetched by garden queries.
+const publicDesignSelect = {
+  gardenId: true, mode: true, flowers: true, flowerOrder: true,
+  greenery: true, timestamp: true, createdAt: true, presentation: true,
+} as const;
+
+export async function getPublicDesignById(id: string) {
+  if (!shareIdSchema.safeParse(id).success) return null;
+  const row = await withDb((db) => db.bouquet.findFirst({
+    where: { gardenId: id, visibility: "public" },
+    select: publicDesignSelect,
   }));
-  return { bouquets, nextCursor: hasMore ? page[page.length - 1].id : null };
+  return row ? toPublicDesign(row) : null;
 }

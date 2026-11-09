@@ -22,10 +22,13 @@ model Bouquet {
   greenery     Int
   timestamp    BigInt
   visibility   Visibility @default(unlisted)
+  // Independent public-design ID. Never publish the recipient's gift ID.
+  gardenId     String?    @unique @map("garden_id") @db.VarChar(128)
   presentation Json?
   createdAt    DateTime   @default(now()) @map("created_at")
 
   @@index([visibility, createdAt(sort: Desc), id(sort: Desc)])
+  @@index([visibility, createdAt(sort: Desc), gardenId(sort: Desc)])
   @@map("bouquets")
 }
 

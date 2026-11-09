@@ -27,7 +27,7 @@ export default async function AllBouquetsPage({ searchParams }: {
       {!result.bouquets.length && <p className="my-8">The garden is waiting for its first flowers.</p>}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {result.bouquets.map((bouquet) => (
-          <Link className="gallery-bouquet" href={`/bouquet/${bouquet.id}`} key={bouquet.id} aria-label="Open this public bouquet">
+          <Link className="gallery-bouquet" href={`/garden/${bouquet.id}`} key={bouquet.id} aria-label="View this bouquet design">
             <BouquetOnly bouquet={bouquet} />
             <p className="text-sm text-gray-500 m-6">{new Date(bouquet.created_at).toLocaleDateString("en-US")}</p>
           </Link>

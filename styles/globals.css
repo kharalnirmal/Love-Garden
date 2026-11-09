@@ -289,6 +289,12 @@ input:focus-visible, textarea:focus-visible { outline: 2px solid var(--rose) !im
 .gift-share { margin: 18px auto; min-height: 48px; }
 .gift-share .privacy-hint { margin-top: 8px; }
 .share-stage input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--rose); }
+.garden-consent { width: min(520px, 100%); min-width: 0; margin: 20px auto; padding: 16px 20px; border: 1px solid var(--soft-line); border-radius: 8px; text-align: left; }
+.garden-consent legend { padding-inline: 6px; font-size: 14px; font-weight: 500; color: var(--rose); }
+.garden-consent-choice { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-height: 44px; font-size: 14px; cursor: pointer; }
+.garden-consent-choice input { flex-shrink: 0; margin-right: 3px; }
+.consent-optional { font-size: 12px; color: #706b62; }
+.garden-consent p { margin-top: 8px; font-size: 12px; line-height: 1.7; color: #696b63; }
 @media (min-width: 900px) {
   .creation-shell { max-width: 1328px; height: 100svh; min-height: 0; grid-template-rows: auto minmax(0, 1fr) auto; padding-bottom: 0; }
   .creation-stage { min-height: 0; overflow-y: auto; overflow-x: clip; scrollbar-gutter: stable both-edges; padding: 14px 8px 8px; }

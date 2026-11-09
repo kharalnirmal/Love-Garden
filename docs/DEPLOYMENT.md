@@ -27,6 +27,8 @@ The application uses a shared, bounded Prisma connection pool in production. Dev
 
 `APP_ORIGIN=http://localhost:3000` is for local use only. QR codes using localhost will not open the app from another device. Do not treat a successful build as browser or mobile verification.
 
+The save API accepts `APP_ORIGIN` and, on Vercel, platform-provided `VERCEL_URL` and `VERCEL_PROJECT_PRODUCTION_URL` origins. Development also accepts the address serving that request, including local-network addresses. Custom production domains must match `APP_ORIGIN`; arbitrary request Host headers never extend the production allowlist.
+
 ## Database operations
 
 - Retain Neon restore history appropriate for the project and monitor storage, compute, connection errors, and save failures.
@@ -34,6 +36,7 @@ The application uses a shared, bounded Prisma connection pool in production. Dev
 - Write attempts are limited atomically to five per hourly client bucket. On Vercel, the limiter uses the platform-overwritten client-IP header. Other hosts intentionally share one bucket until a trusted proxy identity is implemented; configure this before serving multiple users outside Vercel.
 - Periodically remove expired rows from `write_rate_limits` using a trusted scheduled database job. The table stores HMAC bucket keys, not raw addresses. Cleanup is not scheduled by this repository.
 - The sender page provides no edit or delete operations and is not authenticated ownership. Keep gift URLs private when using unlisted visibility.
+- Public-garden consent starts unchecked each time the final step opens. Saving without opting in creates an unlisted gift. Garden listings and design pages use independent random IDs and never expose the recipient gift ID, names, note, or personal tag. Names and notes are still stored for the separate recipient gift link; anyone holding that gift link can read them.
 - Existing gifts in another database are not imported automatically. Switching from a development branch to production does not move that branch's gifts.
 
 ## Development-only integration tests
@@ -43,6 +46,7 @@ Use an isolated branch named `dev-verification`, a local `APP_ORIGIN`, and a tes
 ```bash
 pnpm exec tsx --conditions=react-server tests/neon.integration.ts
 pnpm exec tsx --conditions=react-server tests/gallery-isolation.integration.ts
+pnpm exec tsx --conditions=react-server tests/public-design.integration.ts
 ```
 
 `scripts/test-neon.mjs` also checks an already-running local server over HTTP. None of these fixture-writing scripts should be used against production.
