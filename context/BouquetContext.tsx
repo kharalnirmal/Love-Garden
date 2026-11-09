@@ -41,6 +41,7 @@ export function BouquetProvider({ children, mode }: BouquetProviderProps) {
     greenery: 0,
     timestamp: Date.now(),
     flowerOrder: [],
+    visibility: "unlisted",
   });
 
   // Calculate total flowers for validation using utility function
@@ -52,6 +53,7 @@ export function BouquetProvider({ children, mode }: BouquetProviderProps) {
   // Function to add a flower to the bouquet
   const addFlower = (flower: Flower) => {
     setBouquet((prev) => {
+      if (calculateTotalFlowers(prev.flowers) >= 10) return prev;
       // Check if this flower type already exists in the bouquet
       const existingFlower = prev.flowers.find((f) => f.id === flower.id);
       let newFlowers;

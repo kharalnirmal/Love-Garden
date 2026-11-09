@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Visibility {
+  unlisted
+  public
+}
+
+model Bouquet {
+  // Generated on the server. Imported original IDs can be retained verbatim.
+  id           String     @id @db.VarChar(128)
+  mode         String     @db.VarChar(5)
+  flowers      Json
+  letter       Json
+  flowerOrder  Json
+  greenery     Int
+  timestamp    BigInt
+  visibility   Visibility @default(unlisted)
+  presentation Json?
+  createdAt    DateTime   @default(now()) @map("created_at")
+
+  @@index([visibility, createdAt(sort: Desc), id(sort: Desc)])
+  @@map("bouquets")
+}
+
+model WriteRateLimit {
+  // HMAC of trusted client address + fixed hourly bucket; no raw IP stored.
+  key       String   @id @db.VarChar(64)
+  count     Int      @default(1)
+  expiresAt DateTime
+
+  @@index([expiresAt])
+  @@map("write_rate_limits")
+}

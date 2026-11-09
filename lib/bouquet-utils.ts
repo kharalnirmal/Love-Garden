@@ -23,3 +23,12 @@ export function validateFlowerCount(flowers: BouquetFlower[]): boolean {
   const total = calculateTotalFlowers(flowers);
   return total >= 6 && total <= 10;
 }
+
+// Flattened offsets must use preceding quantities, not flowerIndex * count.
+export function getFlowerInstanceIndex(flowers: BouquetFlower[], flowerIndex: number, instanceIndex: number): number {
+  return flowers.slice(0, flowerIndex).reduce((sum, flower) => sum + flower.count, 0) + instanceIndex;
+}
+
+export function getFlowerRotation(index: number): number {
+  return ((index * 7 + 3) % 11) - 5;
+}

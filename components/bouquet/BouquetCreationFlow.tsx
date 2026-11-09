@@ -14,7 +14,7 @@ const steps = ["Pick Flowers", "Customize Bouquet", "Write Card", "Share"];
 
 // Client component that uses the bouquet context
 export default function BouquetCreationFlow() {
-  const { bouquet, canProceed } = useBouquet();
+  const { canProceed } = useBouquet();
 
   // Track which step the user is currently on (0-3)
   const [currentStep, setCurrentStep] = useState(0);

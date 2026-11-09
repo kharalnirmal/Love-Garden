@@ -1,5 +1,6 @@
 // app/bouquet/[id]/page.tsx
-import { supabase } from "@/lib/supabase"; // we'll make this below
+import { getBouquetById } from "@/lib/bouquet-repository";
+import { notFound } from "next/navigation";
 import Bouquet from "../../../components/bouquet/Bouquet";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,19 +11,15 @@ interface Params {
   }>;
 }
 
+export const dynamic = "force-dynamic";
+export const metadata = { robots: { index: false, follow: false } };
+
 export default async function BouquetPage(props: Params) {
   const params = await props.params;
   const { id } = params;
 
-  const { data, error } = await supabase
-    .from("bouquets")
-    .select()
-    .eq("id", id)
-    .single();
-
-  if (error || !data) {
-    return <div>404 - Bouquet not found</div>;
-  }
+  const data = await getBouquetById(id);
+  if (!data) notFound();
 
   return (
     <div className="text-center p-6 bg-[#F9F9EE]">

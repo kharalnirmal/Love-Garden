@@ -18,6 +18,10 @@ yarn-error.log*
 
 # env files
 .env*
+**/.env*
+/generated/
+/test-results/
+/playwright-report/
 
 # vercel
 .vercel
@@ -25,3 +29,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.neon
+
+# local credentials and machine-specific files
+.npmrc
+.mcp.json
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+service-account*.json
+.DS_Store

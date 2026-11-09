@@ -31,6 +31,18 @@ export interface Bouquet {
   timestamp: number;
   greenery: number;
   flowerOrder: number[];
+  visibility?: "unlisted" | "public";
+  presentation?: {
+    ribbon: "rose" | "sage" | "ivory";
+    wrapping: "none" | "cream" | "blush";
+    tag: string;
+    card: "classic" | "blush" | "botanical";
+  };
+}
+
+export interface SavedBouquet extends Bouquet {
+  id: string;
+  created_at: string;
 }
 
 // Type for the setBouquet function passed to components

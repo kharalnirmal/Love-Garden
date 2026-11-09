@@ -31,7 +31,7 @@ export default function FlowerPicker() {
         {/* Help text - only show if flowers are selected */}
         {totalFlowers > 0 && (
           <p className="mb-8 text-sm opacity-50">
-            Click on a flower's name to deselect it.
+            Click on a flower&apos;s name to deselect it.
           </p>
         )}
 
@@ -42,6 +42,8 @@ export default function FlowerPicker() {
               <TooltipTrigger asChild>
                 <button
                   className="flex relative flex-col items-center cursor-pointer"
+                  disabled={totalFlowers >= 10}
+                  aria-label={`Add ${flower.name}`}
                   onClick={(event) => {
                     event.preventDefault();
                     addFlower(flower);
@@ -120,17 +122,19 @@ export default function FlowerPicker() {
               );
               if (!flower) return null;
               return (
-                <div
+                <button
                   key={id}
                   className="px-3 py-1 text-sm rounded-full border transition-colors cursor-pointer border-primary text-primary hover:bg-primary hover:text-primary-foreground"
                   onClick={() => removeFlower(Number.parseInt(id))} // Remove flower on click
+                  aria-label={`Remove one ${flower.name}`}
                 >
                   {flower.name.toUpperCase()} x{count}
-                </div>
+                </button>
               );
             })}
           </div>
         </div>
+        <p role="status" className="my-4 text-sm">{totalFlowers} of 10 flowers{totalFlowers >= 10 ? " — your bouquet is full. Remove a flower to add another." : totalFlowers < 6 ? " — choose at least 6 to continue." : " — ready to arrange."}</p>
       </div>
     </TooltipProvider>
   );

@@ -1,68 +1,55 @@
-import Image from "next/image";
-import { flowers } from "../../data/data";
-import { supabase } from "@/lib/supabase";
+"use client";
+
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { nanoid } from "nanoid";
 import Bouquet from "../bouquet/Bouquet";
 import { useBouquet } from "../../context/BouquetContext";
-import type { Bouquet as BouquetType } from "@/types/bouquet";
 
 export default function ShareBouquet() {
-  const { bouquet } = useBouquet();
-  // Helper function to get flower dimensions based on size
-  const getFlowerDimensions = (size: string) => {
-    switch (size) {
-      case "small":
-        return 80;
-      case "large":
-        return 160;
-      default:
-        return 120; // medium
-    }
-  };
-
+  const { bouquet, setBouquet } = useBouquet();
   const router = useRouter();
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const inFlight = useRef(false);
 
-  const handleCreateBouquet = async (bouquet: BouquetType) => {
-    const short_id = nanoid(8);
-
-    const { data, error } = await supabase
-      .from("bouquets")
-      .insert([
-        {
-          short_id: short_id,
-          mode: bouquet.mode,
-          flowers: bouquet.flowers,
-          letter: bouquet.letter,
-          timestamp: bouquet.timestamp,
-          greenery: bouquet.greenery,
-          flowerOrder: bouquet.flowerOrder,
-        },
-      ])
-      .select(); // returns inserted row(s)
-
-    if (error || !data || data.length === 0) {
-      console.error("Error creating bouquet:", error);
-      return;
+  async function handleCreateBouquet() {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    setSaving(true);
+    setError("");
+    try {
+      const response = await fetch("/api/bouquets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bouquet),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Could not save your bouquet.");
+      router.push(`/bouquet/${encodeURIComponent(result.id)}`);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Could not save your bouquet. Please try again.");
+      inFlight.current = false;
+      setSaving(false);
     }
-
-    const bouquetId = data[0].id;
-    router.push(`/bouquet/${bouquetId}`);
-  };
+  }
 
   return (
     <div className="text-center">
-      <h2 className="text-md uppercase text-center mb-10">SEND THE BOUQUET</h2>
-
+      <h2 className="text-md text-center mb-10">Send the bouquet</h2>
       <Bouquet bouquet={bouquet} />
-      <button
-        onClick={() => {
-          console.log("Sending bouquet");
-          handleCreateBouquet(bouquet);
-        }}
-        className="uppercase text-white bg-black px-5 py-3"
-      >
-        CREATE SHAREABLE LINK
+      <div className="max-w-md mx-auto mb-6 text-sm space-y-3">
+        <label className="flex gap-3 items-center justify-center min-h-11">
+          <input type="checkbox" checked={bouquet.visibility === "public"} disabled={saving}
+            onChange={(event) => setBouquet((prev) => ({ ...prev, visibility: event.target.checked ? "public" : "unlisted" }))} />
+          Publish this bouquet to the public garden
+        </label>
+        <p>Unlisted by default: only people with the link can open your gift.</p>
+        <p>The garden shows flowers only, never your names or message. A public gift can be opened by anyone from the garden.</p>
+      </div>
+      {error && <p role="alert" className="max-w-md mx-auto mb-4 text-red-800">{error}</p>}
+      <button onClick={handleCreateBouquet} disabled={saving}
+        className="text-white bg-black px-5 py-3 disabled:opacity-50">
+        {saving ? "Saving…" : "Create shareable link"}
       </button>
     </div>
   );

@@ -39,6 +39,7 @@ export default function CardWriter() {
                 <label htmlFor="recipient">Dear </label>
                 <input
                   id="recipient"
+                  maxLength={80}
                   value={bouquet.letter.recipient || ""}
                   onChange={(e) =>
                     setBouquet((prev) => ({
@@ -56,6 +57,8 @@ export default function CardWriter() {
               <div>
                 <textarea
                   id="message"
+                  aria-label="Personal message"
+                  maxLength={2000}
                   value={bouquet.letter.message || ""}
                   onChange={(e) =>
                     setBouquet((prev) => ({
@@ -78,6 +81,7 @@ export default function CardWriter() {
                 </label>
                 <input
                   id="sender"
+                  maxLength={80}
                   value={bouquet.letter.sender || ""}
                   onChange={(e) =>
                     setBouquet((prev) => ({

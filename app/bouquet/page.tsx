@@ -7,7 +7,7 @@ export default async function Home(props: {
 }) {
   // Extract mode from URL params, default to "mono" if not specified
   // This allows different styling/functionality based on mode
-  const mode = (await props.searchParams).mode || "mono";
+  const mode = (await props.searchParams).mode === "color" ? "color" : "mono";
 
   return (
     <BouquetProvider mode={mode}>

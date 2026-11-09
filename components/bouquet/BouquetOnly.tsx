@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { flowers } from "../../data/data";
 import type { BouquetReadOnlyProps } from "@/types/bouquet";
+import { getFlowerInstanceIndex, getFlowerRotation } from "@/lib/bouquet-utils";
 
 export default function BouquetOnly({ bouquet }: BouquetReadOnlyProps) {
   // Helper function to get flower dimensions based on size
@@ -46,15 +47,16 @@ export default function BouquetOnly({ bouquet }: BouquetReadOnlyProps) {
                   .fill(null)
                   .map((_, instanceIndex) => {
                     // Generate random rotation for each flower (-5 to +5 degrees)
-                    const rotation = Math.random() * 10 - 5;
+                    const flatIndex = getFlowerInstanceIndex(bouquet.flowers, flowerIndex, instanceIndex);
+                    const rotation = getFlowerRotation(flatIndex);
 
                     // Determine the visual order of this flower instance
                     // If flowerOrder exists, use it; otherwise use default order
                     const index = bouquet.flowerOrder?.length
                       ? bouquet.flowerOrder[
-                          flowerIndex * flower.count + instanceIndex
-                        ] ?? flowerIndex * flower.count + instanceIndex
-                      : flowerIndex * flower.count + instanceIndex;
+                          flatIndex
+                        ] ?? flatIndex
+                      : flatIndex;
 
                     // Get dimensions based on flower size
                     const dimensions = getFlowerDimensions(flowerData.size);
