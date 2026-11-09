@@ -25,6 +25,31 @@ test("public visibility requires an explicit opt-in", () => {
   assert.equal(createBouquetSchema.parse(valid).visibility, "unlisted");
 });
 
+test("card styles round-trip and older gifts accept missing presentation", () => {
+  assert.equal(createBouquetSchema.parse(valid).presentation, undefined);
+  assert.equal(createBouquetSchema.parse(valid).presentation?.card ?? "classic", "classic");
+  for (const card of ["classic", "blush", "botanical"]) {
+    const presentation = { ribbon: "sage", wrapping: "cream", tag: "For you", card };
+    const saved = createBouquetSchema.parse({ ...valid, presentation });
+    assert.deepEqual(saved.presentation, presentation);
+    assert.deepEqual(saved.flowerOrder, valid.flowerOrder);
+    assert.deepEqual(saved.letter, valid.letter);
+  }
+  assert.equal(createBouquetSchema.safeParse({ ...valid, presentation: { card: "invalid" } }).success, false);
+});
+
+test("ribbons, wrapping, and gift tags survive validation without changing the card", () => {
+  for (const ribbon of ["rose", "sage", "ivory"]) {
+    for (const wrapping of ["none", "cream", "blush"]) {
+      const presentation = { ribbon, wrapping, tag: "For you ♡", card: "blush" };
+      assert.deepEqual(createBouquetSchema.parse({ ...valid, presentation }).presentation, presentation);
+    }
+  }
+  assert.equal(createBouquetSchema.safeParse({ ...valid, presentation: { tag: "x".repeat(41) } }).success, false);
+  assert.equal(createBouquetSchema.safeParse({ ...valid, presentation: { ribbon: "unknown" } }).success, false);
+  assert.equal(createBouquetSchema.safeParse({ ...valid, presentation: { wrapping: "unknown" } }).success, false);
+});
+
 test("flower limits and catalog IDs are validated server-side", () => {
   for (const count of [-1, 0, 5, 11, 1.5]) {
     assert.equal(createBouquetSchema.safeParse({ ...valid, flowers: [{ id: 1, count }] }).success, false);

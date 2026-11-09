@@ -9,6 +9,7 @@ config({ path: ".env", quiet: true });
 // Run against a local production server, never a public deployment.
 const origin = process.argv[2] || "http://127.0.0.1:3100";
 assert.ok(["127.0.0.1", "localhost"].includes(new URL(origin).hostname));
+assert.equal(process.env.NEON_BRANCH, "dev-verification", "Use the isolated verification branch, never production");
 assert.ok(process.env.DATABASE_URL && process.env.RATE_LIMIT_SECRET);
 const sql = neon(process.env.DATABASE_URL);
 const marker = `NeonSmoke_${randomUUID()}`;

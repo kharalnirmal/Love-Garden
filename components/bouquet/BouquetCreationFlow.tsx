@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import FlowerPicker from "../stages/FlowerPicker";
 import BouquetCustomizer from "../stages/BouquetCustomizer";
 import CardWriter from "../stages/CardWriter";
 import ShareBouquet from "../stages/ShareBouquet";
-import Image from "next/image";
-import Link from "next/link";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useBouquet } from "../../context/BouquetContext";
 
 // Define the 4 steps of the bouquet creation process
-const steps = ["Pick Flowers", "Customize Bouquet", "Write Card", "Share"];
+const steps = ["Pick blooms", "Arrange", "Write a note", "Send love"];
 
 // Client component that uses the bouquet context
 export default function BouquetCreationFlow() {
@@ -18,28 +18,26 @@ export default function BouquetCreationFlow() {
 
   // Track which step the user is currently on (0-3)
   const [currentStep, setCurrentStep] = useState(0);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const moveToStep = (step: number) => {
+    setCurrentStep(step);
+    requestAnimationFrame(() => {
+      stageRef.current?.focus({ preventScroll: true });
+      stageRef.current?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" });
+    });
+  };
 
   // Navigation functions
   const nextStep = () =>
-    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1)); // Move forward, but don't exceed max step
-  const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0)); // Move backward, but don't go below 0
+    moveToStep(Math.min(currentStep + 1, steps.length - 1));
+  const prevStep = () => moveToStep(Math.max(currentStep - 1, 0));
 
   return (
-    <main className="container flex flex-col p-4 mx-auto">
-      {/* Logo/Branding */}
-      <Link href="/">
-        <Image
-          src="/digibouquet.png"
-          alt="digibouquet"
-          width={200}
-          height={80}
-          className="object-cover mx-auto mt-6"
-          priority
-        />
-      </Link>
+    <main id="main-content" className="creation-shell" data-step={currentStep}>
+      <ol className="step-list" aria-label="Bouquet progress">{steps.map((step, index) => <li key={step} aria-current={index === currentStep ? "step" : undefined} data-complete={index < currentStep}><span className="step-mark" aria-hidden="true" /><span className="sr-only">Step {index + 1} of {steps.length}: {step}</span></li>)}</ol>
 
       {/* Main content area - renders different components based on current step */}
-      <div className="flex-grow py-8">
+      <div key={currentStep} ref={stageRef} tabIndex={-1} aria-label={steps[currentStep]} className="creation-stage gentle-enter">
         {/* Step 0: Flower Selection - Users pick flowers for their bouquet */}
         {currentStep === 0 && <FlowerPicker />}
 
@@ -54,32 +52,28 @@ export default function BouquetCreationFlow() {
       </div>
 
       {/* Navigation buttons */}
-      <div className="flex flex-row gap-4 justify-center m-auto">
+      <nav className="flow-navigation" aria-label="Bouquet steps">
         {/* Back button - only show if not on first step */}
         {currentStep > 0 && (
-          <button
+          <Button size="lg" variant="outline"
+            className="flow-back"
             onClick={prevStep}
-            className="text-sm px-4 py-2 border border-[#000000]"
           >
-            BACK
-          </button>
+            <ArrowLeft size={18} aria-hidden="true" /> Back
+          </Button>
         )}
 
         {/* Next button - only show if not on last step */}
         {currentStep < steps.length - 1 && (
-          <button
+          <Button size="lg"
             onClick={nextStep}
             disabled={!canProceed}
-            className={`text-sm px-4 py-2 ml-auto ${
-              canProceed
-                ? "bg-[#000000] text-[#F5F5DC]"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
+            className="flow-continue"
           >
-            NEXT
-          </button>
+            Continue <ArrowRight size={18} aria-hidden="true" />
+          </Button>
         )}
-      </div>
+      </nav>
     </main>
   );
 }

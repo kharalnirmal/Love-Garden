@@ -1,15 +1,19 @@
 import Image from "next/image";
+import { Heart, Leaf } from "lucide-react";
+import ChoiceGroup from "@/components/ui/ChoiceGroup";
 import { useBouquet } from "../../context/BouquetContext";
 
 export default function CardWriter() {
   const { bouquet, setBouquet } = useBouquet();
   return (
-    <div className="text-center">
+    <div className="text-center card-writer">
       <div>
-        <h2 className="text-md my-8">WRITE THE CARD</h2>
-        <div className="flex flex-row items-center justify-center">
-          {/* White card container with black border */}
-          <div className="flex flex-row items-center justify-center -space-x-12">
+        <h1 className="stage-title">A little note.</h1>
+        <div className="card-style-picker"><ChoiceGroup name="card-style" legend="Card style" hideLegend value={bouquet.presentation?.card ?? "classic"}
+          onChange={(card) => setBouquet((previous) => ({ ...previous, presentation: { ribbon: "rose", wrapping: "none", tag: "", ...previous.presentation, card } }))}
+          options={(["classic", "blush", "botanical"] as const).map((style) => ({ value: style, label: style, preview: <span className="card-style-swatch" data-style={style}>{style === "blush" ? <Heart size={10} /> : style === "botanical" ? <Leaf size={10} /> : null}<span /><span /></span> }))} /></div>
+        <div className="card-scene">
+          <div className="card-flowers" aria-hidden="true">
             <Image
               src={`/full/flowers/daisy.png`}
               alt="card front"
@@ -33,7 +37,7 @@ export default function CardWriter() {
             />
           </div>
 
-          <div className="bg-white border-2 border-black p-10 max-w-lg mx-10">
+          <div className="writing-card" data-card={bouquet.presentation?.card ?? "classic"}>
             <div className="space-y-4">
               <div className="flex flex-row items-left justify-left gap-2">
                 <label htmlFor="recipient">Dear </label>
@@ -69,10 +73,11 @@ export default function CardWriter() {
                       },
                     }))
                   }
-                  placeholder="I have so much to tell you, but only this much space on this card! Still, you must know..."
+                  placeholder="Something about you makes ordinary days feel special…"
                   rows={5}
-                  className="w-full border-none bg-transparent focus:outline-none focus:ring-0"
+                   className="w-full border-none bg-transparent focus:outline-none focus:ring-0"
                 />
+                <p className="character-count">{bouquet.letter.message.length} / 2,000</p>
               </div>
 
               <div className="flex flex-col items-right justify-end gap-2">
@@ -99,7 +104,7 @@ export default function CardWriter() {
             </div>
           </div>
 
-          <div className="flex flex-row items-center justify-center -space-x-12">
+          <div className="card-flowers" aria-hidden="true">
             <Image
               src={`/full/flowers/carnation.png`}
               alt="card front"

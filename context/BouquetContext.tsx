@@ -42,6 +42,7 @@ export function BouquetProvider({ children, mode }: BouquetProviderProps) {
     timestamp: Date.now(),
     flowerOrder: [],
     visibility: "unlisted",
+    presentation: { ribbon: "rose", wrapping: "none", tag: "", card: "classic" },
   });
 
   // Calculate total flowers for validation using utility function

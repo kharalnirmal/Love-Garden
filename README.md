@@ -1,134 +1,78 @@
-# 🌸 DigiBouquet
+# Love Garden
 
-> Love Garden upgrade in progress in this original fork. See
-> [Phase 1 setup, migration, privacy, and verification notes](docs/PHASE-1.md).
-> Application database: Neon PostgreSQL + Prisma 7. Production-server persistence
-> and public/unlisted separation have been verified; legacy data is not imported.
+Personalized digital bouquets, made to send a little love.
 
-> Beautiful flowers delivered digitally
+Choose flowers, arrange a bouquet, write a note, and share a private link or QR code. Recipients open a floral envelope to reveal their flowers and message.
 
-DigiBouquet allows users to create personalized digital flower bouquets with meaningful messages. Choose from a curated selection of flowers, each with their own symbolic meanings and birth month associations, to create beautiful bouquets that can be shared digitally.
+## Features
 
-## ✨ Features
+- Twelve illustrated flowers in color or black and white, with quantities and arrangement controls.
+- Greenery, ribbons, wrapping, gift tags, and three note-card styles.
+- Handwritten notes and a recipient reveal with reduced-motion support.
+- Copyable gift links and downloadable PNG/SVG QR codes.
+- Unlisted gifts by default; an optional public, paginated garden.
+- Server-side validation, random gift IDs, and database-backed write limits.
 
-- **🌺 Flower Selection**: Choose from 12 different flowers, each with unique meanings:
+## Run locally
 
-  - 🌹 Rose (Love and passion) - June
-  - 🌷 Tulip (Perfect love) - April
-  - 🌸 Peony (Romance) - May
-  - 🌻 Sunflower (Adoration) - August
-  - 🌺 Orchid (Beauty) - October
-  - 💐 Dahlia (Elegance) - August
-  - 🌼 Daisy (Innocence) - April
-  - 🌾 Lily (Purity) - May
-  - 🌟 Anemone (Anticipation) - September
-  - 🌿 Carnation (Fascination) - January
-  - ⭐ Zinnia (Lasting Affection) - July
-  - 🎪 Ranunculus (Radiant Charm) - March
-
-- **📝 Personal Messages**: Add custom cards with sender, recipient, and personalized messages
-
-- **🏡 Garden View**: Browse previously created bouquets
-- **🔗 Shareable Links**: Each bouquet gets a unique URL for easy sharing
-
-## 🛠️ Tech Stack
-
-- **Framework**: [Next.js 15](https://nextjs.org/) with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Database**: Neon Postgres with Prisma (server-side only)
-- **UI Components**: Shadcn UI
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- pnpm
-
-### Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone <repository-url>
-   cd digibouquet
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   pnpm install
-   ```
-
-3. **Set up environment variables**
-
-    Link and deploy the Neon Postgres configuration from the project root:
-
-    ```bash
-    neon init -y --org-id org-aged-unit-20404474 --project-id red-term-11717269 --branch production --services postgres
-    neon deploy
-    ```
-
-    Neon pulls `DATABASE_URL` (pooled, for application queries) and
-    `DATABASE_URL_UNPOOLED` (direct, for Prisma migrations) into `.env.local`,
-    or `.env` if it exists. Keep these credentials server-only and uncommitted.
-    Prisma loads `.env.local` first, then `.env`, and also supports the legacy
-    `DIRECT_URL` migration variable.
-
-    Add `APP_ORIGIN` (your website origin; locally `http://localhost:3000`)
-    and a random `RATE_LIMIT_SECRET` of at least 32 characters.
-    All `.env*` files are intentionally excluded from this public repository.
-    Generate the secret with
-    `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
-    Apply checked-in migrations with `npm run db:migrate:deploy` before starting
-    the app. Test schema changes on an isolated Neon branch before production.
-    Existing bouquets from another database are not imported automatically.
-
-4. **Run the development server**
-
-   ```bash
-   pnpm dev
-   ```
-
-### Production integration check
-
-After building, start a local production server:
+Requires Node.js 22.12+ and pnpm 10.32.0.
 
 ```bash
-npm run build
-APP_ORIGIN=http://127.0.0.1:3100 npm start -- --hostname 127.0.0.1 --port 3100
+git clone https://github.com/kharalnirmal/digiboquet.git
+cd digiboquet
+pnpm install --frozen-lockfile
 ```
 
-In a second terminal, run `node scripts/test-neon.mjs`. It creates temporary
-bouquets through the app API, verifies the actual Neon rows and share pages,
-checks garden privacy and the database-backed rate limit, then deletes its test
-records. Use a development Neon branch for routine tests. This is an HTTP
-integration check, not a browser/mobile UI test.
+Copy `.env.example` to `.env.local`, then provide a Neon **development branch's** pooled and direct database URLs. Generate a random `RATE_LIMIT_SECRET` using the command in the example. Keep all real environment files private.
 
-## 📁 Project Structure
-
-```
-digibouquet/
-├── app/                      # Next.js App Router pages
-│   ├── bouquet/             # Bouquet creation and viewing
-│   ├── garden/              # Garden view page
-│   └── layout.tsx           # Root layout
-├── components/              # React components
-│   ├── bouquet/            # Bouquet display components
-│   ├── stages/             # Creation flow stages
-│   └── ui/                 # Reusable UI components
-├── context/                # React Context providers
-├── data/                   # Static data (flowers, meanings)
-├── lib/                    # Utility functions
-├── types/                  # TypeScript type definitions
-├── public/                 # Static assets
-│   ├── color/              # Color flower images
-│   ├── mono/               # Black & white images
-│   └── full/               # Full resolution images
-└── styles/                 # Global styles
+```bash
+pnpm db:migrate:deploy
+pnpm dev
 ```
 
----
+Open <http://localhost:3000>. Never run development fixture tests against production.
 
-_Create meaningful digital bouquets that bloom forever_ 🌺
+## Commands
+
+| Command | Purpose |
+| --- | --- |
+| `pnpm dev` | Next.js development server |
+| `pnpm build` | Generate Prisma client and build the application |
+| `pnpm start` | Serve the production build |
+| `pnpm lint` | ESLint |
+| `pnpm typecheck` | TypeScript checks |
+| `pnpm test` | Validation, sharing, and QR decoding tests |
+| `pnpm db:validate` | Validate the Prisma schema |
+| `pnpm db:migrate:deploy` | Apply checked-in migrations |
+
+## Architecture
+
+Next.js App Router, React, TypeScript, Tailwind CSS, shadcn-style UI primitives, Prisma, and Neon Postgres.
+
+```text
+app/                   Pages, API handlers, QR exports, and share previews
+components/bouquet/    Bouquet artwork, creation flow, reveal, and sharing UI
+components/stages/     Pick, arrange, write, and send steps
+components/ui/         Shared accessible controls
+context/               Client-side bouquet draft state
+data/                  Flower catalog and meanings
+lib/                   Server-only persistence, validation, limits, and QR helpers
+prisma/                Schema and versioned SQL migrations
+public/                Original flower illustrations and static assets
+styles/                Shared visual styles
+tests/                 Unit and development-only integration tests
+```
+
+The client owns an unsaved draft. `POST /api/bouquets` validates and stores it on the server. A successful save opens `/bouquet/[id]/share`; copied links and QR codes open `/gift/[id]`. Original `/bouquet/[id]` links remain supported.
+
+Database access is server-only. Gallery and social-preview queries exclude names and messages. An unlisted gift is **not authenticated**: anyone holding its URL can read it. Public bouquets expose their full gift when opened. The share page is read-only, not an authenticated ownership screen.
+
+## Deployment
+
+See [deployment and database configuration](docs/DEPLOYMENT.md) for environment variables, migrations, operational limits, and verification.
+
+## Credits and permissions
+
+Love Garden is maintained by [Nirmal Kharal](https://www.instagram.com/nirmalkharal/) and builds on [DigiBouquet](https://github.com/sauravsid/digibouquet). Original project and flower artwork credit: [@pau_wee_](https://x.com/pau_wee_).
+
+No license or explicit artwork-reuse grant was supplied with the original source. This repository does not grant rights to the inherited code or illustrations; confirm permission before redistributing or commercializing them.

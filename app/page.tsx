@@ -1,61 +1,48 @@
-import Image from "next/image";
 import Link from "next/link";
+import { Caveat } from "next/font/google";
+import { Feather, Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Credits from "@/components/Credits";
+import FlowerArtwork from "@/components/bouquet/FlowerArtwork";
+import type { Bouquet } from "@/types/bouquet";
+
+const caveat = Caveat({ subsets: ["latin"], weight: "700", display: "swap" });
+
+const welcomeBouquet: Bouquet = {
+  mode: "color",
+  flowers: [11, 2, 10, 4, 9, 5, 6, 12, 7].map((id) => ({ id, count: 1 })),
+  flowerOrder: [3, 0, 6, 2, 1, 5, 8, 7, 4],
+  greenery: 1,
+  letter: { sender: "", recipient: "", message: "" },
+  timestamp: 0,
+  presentation: { ribbon: "rose", wrapping: "cream", tag: "", card: "classic" },
+};
 
 export default function Home() {
   return (
-    <div className="flex flex-col justify-center items-center p-4 min-h-screen font-mono uppercase">
-      <div className="p-16 mx-auto max-w-3xl text-center">
-        <Image
-          src="/color/flowers/peony.png"
-          alt="anemone flower"
-          width={100}
-          height={100}
-          className="object-cover mx-auto mb-6"
-          priority
-        />
-        <Image
-          src="/digibouquet.png"
-          alt="digibouquet"
-          width={600}
-          height={400}
-          className="object-cover mx-auto"
-          priority
-        />
-        <p className="my-6 text-sm md:mb-6 md:-mt-6">
-          beautiful flowers <br /> delivered digitally
-        </p>
-        <div className="flex flex-col justify-center items-center">
-          <Link
-            href="/bouquet?mode=color"
-            className="text-sm px-8 py-4 bg-[#000000] text-[#F5F5DC] hover:bg-[#0A0000]/90 m-2"
-          >
-            BUILD A BOUQUET
-          </Link>
-
-          <Link
-            href="/bouquet?mode=mono"
-            className="text-sm px-8 py-4 border border-black text-[#000000] hover:bg-[#F5F5AC]/90 m-2"
-          >
-            BUILD IT IN BLACK AND WHITE
-          </Link>
-          <Link
-            href="/garden"
-            className="text-sm px-8 py-4 underline text-[#000000] m-2"
-          >
-            VIEW GARDEN
-          </Link>
-        </div>
-
-        <p className="mt-10 text-sm text-gray-500">
-          made by{" "}
-          <Link
-            href="https://x.com/pau_wee_"
-            className="mt-2 text-sm text-gray-500 underline"
-          >
-            @pau_wee_
-          </Link>
-        </p>
-      </div>
+    <div className="home-shell">
+      <div className="home-floral-backdrop" aria-hidden="true" />
+      <p className="home-wordmark">Love Garden</p>
+      <main id="main-content">
+        <section className="home-hero">
+          <div className="hero-copy">
+            <h1 className={caveat.className}>Say it with<br /><em>flowers.</em></h1>
+            <div className="hero-actions">
+              <Button asChild size="lg" className="home-action"><Link href="/bouquet?mode=color"><Heart aria-hidden="true" /> Create a bouquet</Link></Button>
+              <Button asChild size="lg" variant="outline" className="home-action"><Link href="/bouquet?mode=mono"><Feather aria-hidden="true" /> Black &amp; white</Link></Button>
+            </div>
+          </div>
+          <div className="hero-bouquet">
+            <div className="hero-orbit" aria-hidden="true" />
+            <div className="hero-flower-preview" role="img" aria-label="A hand-tied bouquet of nine garden flowers"><FlowerArtwork bouquet={welcomeBouquet} /></div>
+            <Link href="/garden" className="garden-annotation">
+              <span>Explore the garden</span>
+              <svg viewBox="0 0 145 75" fill="none" aria-hidden="true"><path d="M5 13C47-5 103 8 124 57M106 49l19 11 6-22" /></svg>
+            </Link>
+          </div>
+        </section>
+      </main>
+      <Credits />
     </div>
   );
 }

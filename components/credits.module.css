@@ -1,0 +1,12 @@
+.footer { position: relative; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; column-gap: 18px; width: 100%; margin: 0 auto; padding: 8px 0 12px; color: #736e64; font-size: 12px; }
+.maker { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 5px; min-height: 44px; margin: 0; }
+.maker a { display: inline-flex; align-items: center; min-height: 44px; color: #744354; text-decoration: underline; text-decoration-color: #74435450; text-underline-offset: 4px; }
+.maker a:hover { text-decoration-color: currentColor; }
+.credits { position: static; }
+.credits summary { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 8px; color: #736e64; font-size: 11px; cursor: pointer; list-style: none; }
+.credits summary::-webkit-details-marker { display: none; }
+.credits summary:hover, .credits[open] summary { color: #654657; text-decoration: underline; text-underline-offset: 4px; }
+.panel { position: absolute; bottom: calc(100% + 10px); right: 50%; transform: translateX(50%); z-index: 30; width: min(280px, calc(100vw - 48px)); padding: 18px; border: 1px solid #e1d8ca; border-radius: 8px; background: #fffdf9; box-shadow: 0 8px 30px #493b2d0d; line-height: 1.9; }
+.panel a { text-decoration: underline; text-underline-offset: 3px; }
+.footer a:focus-visible, .credits summary:focus-visible { outline: 2px solid #744354; outline-offset: 3px; border-radius: 3px; }
+@media (max-width: 380px) { .footer { column-gap: 8px; font-size: 11px; } }

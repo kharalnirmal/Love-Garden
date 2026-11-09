@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { Minus } from "lucide-react";
 import { flowers } from "../../data/data";
 import {
   Tooltip,
@@ -24,24 +25,19 @@ export default function FlowerPicker() {
 
   return (
     <TooltipProvider disableHoverableContent delayDuration={0}>
-      <div className="h-full text-center dfont-crimson">
+      <div className="h-full text-center flower-picker">
         {/* Page title */}
-        <h2 className="mb-4 uppercase text-md">Pick 6 to 10 BLOOMS</h2>
-
-        {/* Help text - only show if flowers are selected */}
-        {totalFlowers > 0 && (
-          <p className="mb-8 text-sm opacity-50">
-            Click on a flower&apos;s name to deselect it.
-          </p>
-        )}
+        <h1 className="stage-title">Pick your blooms.</h1>
+        <p className="stage-description">Choose 6–10 stems.</p>
 
         {/* Grid of available flowers */}
-        <div className="flex flex-wrap justify-center gap-4 mb-8 items-center min-h-[200px]">
+        <div className="flower-grid">
           {flowersData.map((flower) => (
             <Tooltip key={flower.id}>
               <TooltipTrigger asChild>
                 <button
-                  className="flex relative flex-col items-center cursor-pointer"
+                  className="flower-tile"
+                  data-selected={Boolean(selectedFlowersMap[flower.id])}
                   disabled={totalFlowers >= 10}
                   aria-label={`Add ${flower.name}`}
                   onClick={(event) => {
@@ -57,7 +53,7 @@ export default function FlowerPicker() {
                         : flower.size === "large"
                         ? "w-48 h-48"
                         : "w-40 h-40"
-                    } flex items-center justify-center transition-transform duration-300 overflow-hidden ${
+                     } flower-tile-image flex items-center justify-center transition-transform duration-300 overflow-hidden ${
                       // Add selection effect
                       selectedFlowersMap[flower.id]
                         ? "transform -translate-y-2"
@@ -96,6 +92,7 @@ export default function FlowerPicker() {
                       {selectedFlowersMap[flower.id]}
                     </div>
                   )}
+                  <span className="flower-name">{flower.name}</span>
                 </button>
               </TooltipTrigger>
               <TooltipContent
@@ -128,13 +125,14 @@ export default function FlowerPicker() {
                   onClick={() => removeFlower(Number.parseInt(id))} // Remove flower on click
                   aria-label={`Remove one ${flower.name}`}
                 >
-                  {flower.name.toUpperCase()} x{count}
+                   {flower.name} × {count} <Minus size={13} className="inline" aria-hidden="true" />
                 </button>
               );
             })}
           </div>
         </div>
-        <p role="status" className="my-4 text-sm">{totalFlowers} of 10 flowers{totalFlowers >= 10 ? " — your bouquet is full. Remove a flower to add another." : totalFlowers < 6 ? " — choose at least 6 to continue." : " — ready to arrange."}</p>
+        <div className="bloom-meter" aria-hidden="true">{Array.from({ length: 10 }, (_, index) => <span key={index} data-filled={index < totalFlowers} />)}</div>
+        <p role="status" className="my-4 text-sm">{totalFlowers} / 10{totalFlowers < 6 ? ` · ${6 - totalFlowers} more to start` : totalFlowers === 10 ? " · Full" : " · Ready"}</p>
       </div>
     </TooltipProvider>
   );
